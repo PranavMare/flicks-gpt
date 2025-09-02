@@ -1,0 +1,16 @@
+<!-- FlicksGPT logo — tight-cropped to text, blue gradient for black backgrounds -->
+<svg xmlns="http://www.w3.org/2000/svg" width="300" height="80" viewBox="0 0 300 64" aria-label="FlicksGPT logo">
+  <defs>
+    <linearGradient id="g" x1="0" x2="1" y1="0" y2="0">
+      <stop offset="0" stop-color="#60A5FA"></stop>
+      <stop offset="1" stop-color="#1D4ED8"></stop>
+    </linearGradient>
+    <style>
+      .wb{font-family:Poppins,Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;font-weight:700;letter-spacing:-.02em}
+    </style>
+  </defs>
+  <!-- text fills the viewBox exactly (no side padding) -->
+  <text x="0" y="0" dominant-baseline="hanging" class="wb" font-size="56" textLength="300" lengthAdjust="spacingAndGlyphs">
+    <tspan fill="url(#g)">Flicks</tspan><tspan fill="#FFFFFF">GPT</tspan>
+  </text>
+</svg>

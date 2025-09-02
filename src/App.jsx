@@ -1,9 +1,8 @@
-import "./App.css";
-
+import Body from "./components/Body";
 function App() {
   return (
     <div>
-      <div className="">FlicksGPT - AI movie search by vibe, scene, or quote.</div>
+      <Body />
     </div>
   );
 }
