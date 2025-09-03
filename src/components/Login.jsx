@@ -4,7 +4,6 @@ import { checkValidData } from "../utils/validate";
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { auth } from "../utils/firebase";
 import { useNavigate } from "react-router-dom";
-import profile_icon from "/profile_icon.png";
 import { useDispatch } from "react-redux";
 import { addUser } from "../utils/userSlice";
 
@@ -37,7 +36,7 @@ const Login = () => {
 
           updateProfile(user, {
             displayName: name.current.value,
-            photoURL: profile_icon,
+            photoURL: "/profile-icon.png",
           })
             .then(() => {
               const { uid, email, displayName, photoURL } = auth.currentUser;
