@@ -17,7 +17,7 @@ const Header = () => {
   };
 
   useEffect(() => {
-    onAuthStateChanged(auth, (user) => {
+    const unsubcribe = onAuthStateChanged(auth, (user) => {
       if (user) {
         const { uid, email, displayName, photoURL } = user;
         dispatch(addUser({ uid: uid, email: email, displayName: displayName, photoURL: photoURL }));
@@ -27,6 +27,8 @@ const Header = () => {
         dispatch(removeUser());
         navigate("/");
       }
+      //unsubscribe when component unmounts
+      return () => unsubcribe();
     });
   }, []);
 
@@ -50,7 +52,7 @@ const Header = () => {
               <button
                 type="button"
                 onClick={handleSignOut}
-                className="px-3 py-1.5 rounded-md border border-white/20 bg-blue-500 text-white/90 font-semibold whitespace-nowrap hover:bg-blue-700 active:bg-white/20 focus:outline-none focus:ring-2 focus:ring-white/40"
+                className="px-3 py-1.5 rounded-md border border-white/20 bg-blue-800 text-white/90 font-semibold whitespace-nowrap hover:bg-blue-900 active:bg-white/20 focus:outline-none focus:ring-2 focus:ring-white/40"
               >
                 {"Sign\u2011Out"}
               </button>
