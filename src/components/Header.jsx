@@ -1,53 +1,52 @@
 import { getAuth, onAuthStateChanged, signOut } from "firebase/auth";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
 import { addUser, removeUser } from "../utils/userSlice";
+import profileIcon from "../assets/profile-icon.png";
 
 const Header = () => {
   const auth = getAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const user = useSelector((store) => store.user);
   const dispatch = useDispatch();
 
   const handleSignOut = () => {
-    signOut(auth)
-      .then(() => {})
-      .catch(() => navigate("/error"));
+    signOut(auth).catch(() => navigate("/error"));
   };
 
   useEffect(() => {
-    const unsubcribe = onAuthStateChanged(auth, (user) => {
-      if (user) {
-        const { uid, email, displayName, photoURL } = user;
-        dispatch(addUser({ uid: uid, email: email, displayName: displayName, photoURL: photoURL }));
-
-        navigate("/browse");
+    const unsubscribe = onAuthStateChanged(auth, (fbUser) => {
+      if (fbUser) {
+        const { uid, email, displayName, photoURL } = fbUser;
+        dispatch(addUser({ uid, email, displayName, photoURL }));
+        if (location.pathname !== "/browse") navigate("/browse");
       } else {
         dispatch(removeUser());
-        navigate("/");
+        if (location.pathname !== "/") navigate("/");
       }
-      //unsubscribe when component unmounts
-      return () => unsubcribe();
     });
-  }, []);
+    return () => unsubscribe(); // ✅ correct cleanup
+  }, [auth, dispatch, navigate, location.pathname]);
 
   return (
-    <header className="absolute  top-0 inset-x-0 z-50 bg-gradient-to-b from-black">
+    <header className="absolute top-0 inset-x-0 z-50 bg-gradient-to-b from-black">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-14 sm:h-16 items-center justify-between">
           <img src="/logo.svg" alt="FlicksGPT" className="h-8 sm:h-10 w-auto select-none" draggable="false" />
-
           {user && (
             <div className="flex items-center gap-3">
               <img
-                src={user.photoURL || "/profile-icon.png"}
-                onError={(e) => {
-                  e.currentTarget.src = "/profile-icon.png";
-                }}
+                src={user.photoURL || profileIcon}
                 alt="Profile"
                 className="h-9 w-9 sm:h-10 sm:w-10 rounded-full object-cover ring-2 ring-white/20 shadow"
                 loading="lazy"
+                decoding="async"
+                onError={(e) => {
+                  e.currentTarget.onerror = null;
+                  e.currentTarget.src = profileIcon;
+                }}
               />
               <button
                 type="button"
