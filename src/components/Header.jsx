@@ -4,13 +4,18 @@ import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
 import { addUser, removeUser } from "../utils/userSlice";
 import profileIcon from "../assets/profile-icon.png";
+import { toggleGptSearchView } from "./../utils/gptSlice";
+import { SUPPORTED_LANGUAGES } from "../utils/constants";
+import { changeLanguage } from "../utils/configSlice";
 
 const Header = () => {
   const auth = getAuth();
   const navigate = useNavigate();
   const location = useLocation();
-  const user = useSelector((store) => store.user);
   const dispatch = useDispatch();
+  const user = useSelector((store) => store.user);
+
+  const showGPTSearch = useSelector((store) => store.gpt.showGPTSearch);
 
   const handleSignOut = () => {
     signOut(auth).catch(() => navigate("/error"));
@@ -21,14 +26,22 @@ const Header = () => {
       if (fbUser) {
         const { uid, email, displayName, photoURL } = fbUser;
         dispatch(addUser({ uid, email, displayName, photoURL }));
-        if (location.pathname !== "/browse") navigate("/browse");
+        navigate("/browse");
       } else {
         dispatch(removeUser());
-        if (location.pathname !== "/") navigate("/");
+        navigate("/");
       }
     });
-    return () => unsubscribe(); // ✅ correct cleanup
+    return () => unsubscribe();
   }, [auth, dispatch, navigate, location.pathname]);
+
+  const handleGPTSerachClick = () => {
+    //toggle GPT
+    dispatch(toggleGptSearchView());
+  };
+  const handleLanguageChange = (e) => {
+    dispatch(changeLanguage(e.target.value));
+  };
 
   return (
     <header className="absolute top-0 inset-x-0 z-50 bg-gradient-to-b from-black">
@@ -37,6 +50,18 @@ const Header = () => {
           <img src="/logo.svg" alt="FlicksGPT" className="h-8 sm:h-10 w-auto select-none" draggable="false" />
           {user && (
             <div className="flex items-center gap-3">
+              {showGPTSearch && (
+                <select
+                  onChange={handleLanguageChange}
+                  className="px-3 py-1.5 rounded-md border border-white/20 text-white font-semibold whitespace-nowrap active:bg-white/20 focus:outline-none focus:ring-2 focus:ring-white/40"
+                >
+                  {SUPPORTED_LANGUAGES.map((lang) => (
+                    <option key={lang.identifier} value={lang.identifier} className="text-black   active:bg-white/20">
+                      {lang.name}
+                    </option>
+                  ))}
+                </select>
+              )}
               <img
                 src={user.photoURL || profileIcon}
                 alt="Profile"
@@ -48,6 +73,13 @@ const Header = () => {
                   e.currentTarget.src = profileIcon;
                 }}
               />
+              <button
+                type="button"
+                onClick={handleGPTSerachClick}
+                className="px-3 py-1.5 rounded-md border border-white/20 bg-blue-800 text-white/90 font-semibold whitespace-nowrap hover:bg-blue-900 active:bg-white/20 focus:outline-none focus:ring-2 focus:ring-white/40"
+              >
+                {showGPTSearch ? "Home" : "GPT Search"}
+              </button>
               <button
                 type="button"
                 onClick={handleSignOut}
