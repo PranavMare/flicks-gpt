@@ -59,3 +59,6 @@ exports.tmdb = onRequest({ region: "us-central1", secrets: ["TMDB_BEARER"] }, as
     res.status(r.status).json(data);
   });
 });
+
+//OPENAI API Function export
+exports.openaifn = require("./openaifn").openaifn;

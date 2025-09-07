@@ -7,6 +7,8 @@
         "source": "/api/tmdb/**",
         "function": { "functionId": "tmdb", "region": "us-central1" }
       },
+      { "source": "/api/openai/**", "function": { "functionId": "openaifn", "region": "us-central1" } },
+
       {
         "source": "**",
         "destination": "/index.html"
