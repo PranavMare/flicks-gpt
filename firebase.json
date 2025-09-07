@@ -3,16 +3,9 @@
     "public": "dist",
     "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
     "rewrites": [
-      {
-        "source": "/api/tmdb/**",
-        "function": { "functionId": "tmdb", "region": "us-central1" }
-      },
-      { "source": "/api/openai/**", "function": { "functionId": "openaifn", "region": "us-central1" } },
-
-      {
-        "source": "**",
-        "destination": "/index.html"
-      }
+      { "source": "/api/tmdb/**", "function": { "functionId": "tmdb", "region": "us-central1" } },
+      { "source": "/api/openai", "function": "openaiChat" },
+      { "source": "**", "destination": "/index.html" }
     ]
   },
   "functions": [

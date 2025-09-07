@@ -22,6 +22,7 @@ const { onRequest } = require("firebase-functions/v2/https");
 // functions should each use functions.runWith({ maxInstances: 10 }) instead.
 // In the v1 API, each function can only serve one request per container, so
 // this will be the maximum concurrent request count.
+
 setGlobalOptions({ maxInstances: 10 });
 
 // Create and deploy your first functions
@@ -33,13 +34,14 @@ setGlobalOptions({ maxInstances: 10 });
 // });
 
 const cors = require("cors")({
-  origin: ["https://flicks-gpt-6d005.web.app/", "https://flicks-gpt-6d005.firebaseapp.com/", "http://localhost:5173"],
-  methods: ["GET"],
+  origin: ["https://flicks-gpt-6d005.web.app", "https://flicks-gpt-6d005.firebaseapp.com", "http://localhost:5173"],
+  methods: ["GET", "OPTIONS"],
 });
 
 // /api/tmdb/<anything>?<qs>
 exports.tmdb = onRequest({ region: "us-central1", secrets: ["TMDB_BEARER"] }, async (req, res) => {
   return cors(req, res, async () => {
+    if (req.method === "OPTIONS") return res.status(204).send();
     if (req.method !== "GET") return res.status(405).json({ error: "GET only" });
 
     const prefix = "/api/tmdb/";
@@ -47,18 +49,13 @@ exports.tmdb = onRequest({ region: "us-central1", secrets: ["TMDB_BEARER"] }, as
     if (!tail) return res.status(400).json({ error: "missing TMDB path" });
 
     const url = new URL(`https://api.themoviedb.org/3/${tail}`);
-    for (const [k, v] of Object.entries(req.query)) {
-      url.searchParams.append(k, String(v));
-    }
+    for (const [k, v] of Object.entries(req.query)) url.searchParams.append(k, String(v));
 
-    const r = await fetch(url.toString(), {
-      headers: { Authorization: `Bearer ${process.env.TMDB_BEARER}` },
-    });
-
+    const r = await fetch(url.toString(), { headers: { Authorization: `Bearer ${process.env.TMDB_BEARER}` } });
     const data = await r.json();
     res.status(r.status).json(data);
   });
 });
 
 //OPENAI API Function export
-exports.openaifn = require("./openaifn").openaifn;
+exports.openaiChat = require("./openaiChat").openaiChat;
