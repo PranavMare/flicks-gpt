@@ -14,5 +14,5 @@ export const useTopRatedMovies = () => {
       dispatch(addTopRatedMovies(json?.results ?? []));
     };
     !topRatedMovies && getTopRatedMovies();
-  }, [dispatch]);
+  }, [dispatch, topRatedMovies]);
 };

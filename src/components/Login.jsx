@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import React, { useRef, useState } from "react";
 import Header from "./Header";
 import { checkValidData } from "../utils/validate";
@@ -15,71 +14,135 @@ const Login = () => {
   const password = useRef(null);
   const dispatch = useDispatch();
 
-  const toggleSignInForm = () => {
-    setIsSignInForm(!isSignInForm);
-  };
+  const toggleSignInForm = () => setIsSignInForm(!isSignInForm);
 
   const handleButtonClick = () => {
-    //Validate the form data
+    // Validate the form data
     const message = checkValidData(email.current.value, password.current.value);
     setErrorMessage(message);
-
     if (message) return;
 
-    //sign-up
+    // Sign-up
     if (!isSignInForm) {
       createUserWithEmailAndPassword(auth, email.current.value, password.current.value)
         .then((userCredential) => {
-          // Sign up
           const user = userCredential.user;
-
           updateProfile(user, {
             displayName: name.current.value,
             photoURL: "/profile-icon.png",
           })
             .then(() => {
-              const { uid, email, displayName, photoURL } = auth.currentUser;
-              dispatch(addUser({ uid: uid, email: email, displayName: displayName, photoURL: photoURL }));
+              const { uid, email: em, displayName, photoURL } = auth.currentUser;
+              dispatch(addUser({ uid, email: em, displayName, photoURL }));
             })
-            .catch((error) => {
-              setErrorMessage(error.message);
-            });
+            .catch((error) => setErrorMessage(error.message));
         })
-        .catch((error) => {
-          const errorCode = error.code;
-          const errorMessage = error.message;
-          setErrorMessage(errorCode + " " + errorMessage);
-        });
+        .catch((error) => setErrorMessage(`${error.code} ${error.message}`));
     } else {
-      signInWithEmailAndPassword(auth, email.current.value, password.current.value)
-        .then((userCredential) => {
-          // Signed in
-          const user = userCredential.user;
-        })
-        .catch((error) => {
-          const errorCode = error.code;
-          const errorMessage = error.message;
-          setErrorMessage(errorCode + " " + errorMessage);
-        });
+      // Sign-in
+      signInWithEmailAndPassword(auth, email.current.value, password.current.value).catch((error) => setErrorMessage(`${error.code} ${error.message}`));
     }
   };
-  return (
-    <div>
-      <Header />
-      <img src="\background.jpeg" alt="backgrond image" className="absolute" />
 
-      <div>
-        <form className="w-full md:w-3/12 absolute p-12 bg-black/80 my-36 mx-auto right-0 left-0 text-white rounded-3xl" onSubmit={(e) => e.preventDefault()}>
-          <h1 className="text-3xl font-bold py-4 ">{isSignInForm ? "Sign In" : "Sign Up"}</h1>
-          {!isSignInForm && <input ref={name} type="text" placeholder="Full Name" className="p-4 my-4 w-full bg-gray-700 rounded-sm" />}
-          <input ref={email} type="text" placeholder="Email address" className="p-4 my-4 w-full bg-gray-700 rounded-sm" />
-          <input ref={password} type="password" placeholder="Password" className="p-4 my-4 w-full bg-gray-700 rounded-sm" />
-          <p className="text-red-500 font-semibold text-lg py-2">{errorMessage}</p>
-          <button className="p-4 my-6 bg-blue-500 w-full rounded-sm cursor-pointer" onClick={handleButtonClick}>
+  return (
+    <div className="min-h-[100svh] bg-black text-white">
+      <Header />
+      <div className="relative flex min-h-[calc(100svh-64px)] md:min-h-[calc(100vh-64px)] items-center justify-center overflow-hidden">
+        <img
+          src="/background.jpeg"
+          alt=""
+          aria-hidden="true"
+          draggable="false"
+          loading="lazy"
+          className="
+            absolute inset-0 h-full w-full object-contain md:object-cover object-center md:object-[center_18%] pointer-events-none select-none"
+        />
+
+        <div className="absolute inset-0 -z-10 bg-black/50 md:bg-black/40" />
+
+        <form
+          onSubmit={(e) => e.preventDefault()}
+          className="
+            w-full max-w-md mx-auto rounded-2xl border border-white/10 bg-black/70 backdrop-blur shadow-xl px-6 py-8 sm:px-8 sm:py-10"
+        >
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">{isSignInForm ? "Sign In" : "Create your account"}</h1>
+
+          {errorMessage ? (
+            <div role="alert" aria-live="polite" className="mt-4 rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-3 text-red-200 text-sm">
+              {errorMessage}
+            </div>
+          ) : null}
+
+          {!isSignInForm && (
+            <div className="mt-6">
+              <label htmlFor="fullName" className="block text-sm text-slate-200">
+                Full Name
+              </label>
+              <input
+                id="fullName"
+                ref={name}
+                type="text"
+                placeholder="Jane Doe"
+                autoComplete="name"
+                className="
+                  mt-1 w-full rounded-xl
+                  bg-white/10 placeholder-white/60
+                  border border-white/10
+                  px-4 py-3
+                  focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+            </div>
+          )}
+
+          <div className="mt-6">
+            <label htmlFor="email" className="block text-sm text-slate-200">
+              Email address
+            </label>
+            <input
+              id="email"
+              ref={email}
+              type="email"
+              placeholder="you@example.com"
+              autoComplete="email"
+              className="
+                mt-1 w-full rounded-xl
+                bg-white/10 placeholder-white/60
+                border border-white/10
+                px-4 py-3
+                focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            />
+          </div>
+
+          <div className="mt-6">
+            <label htmlFor="password" className="block text-sm text-slate-200">
+              Password
+            </label>
+            <input
+              id="password"
+              ref={password}
+              type="password"
+              placeholder="••••••••"
+              autoComplete={isSignInForm ? "current-password" : "new-password"}
+              className="
+                mt-1 w-full rounded-xl bg-white/10 placeholder-white/60 border border-white/10px-4 py-3
+                focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            />
+          </div>
+
+          <button
+            type="submit"
+            onClick={handleButtonClick}
+            className=" mt-8 w-full rounded-xl bg-blue-600 hover:bg-blue-500 active:bg-blue-600 px-4 py-3 font-medium transition
+              focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 focus:ring-offset-black"
+          >
             {isSignInForm ? "Sign In" : "Sign Up"}
           </button>
-          <p className="py-4 cursor-pointer" onClick={toggleSignInForm}>
-            {isSignInForm ? "New to FlicksGPT? Sign Up now!" : "Already Registered? Sign In!"}
+
+          <p className="mt-6 text-sm text-slate-300">
+            {isSignInForm ? "New to FlicksGPT?" : "Already registered?"}{" "}
+            <button type="button" onClick={toggleSignInForm} className="font-semibold text-white hover:underline underline-offset-4 cursor-pointer">
+              {isSignInForm ? "Create an account" : "Sign in"}
+            </button>
           </p>
         </form>
       </div>

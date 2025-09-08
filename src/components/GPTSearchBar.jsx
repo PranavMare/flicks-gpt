@@ -54,13 +54,9 @@ const GPTSearchBar = () => {
       const lists = await Promise.all(
         titles.slice(0, 10).map(async (t) => {
           const arr = await searchMovieTMDB(t);
-          // If you only want the top hit per title, return arr[0] instead:
-          // return arr[0] ?? null;
           return arr;
         })
       );
-
-      // 4) Put movie objects into Redux
       dispatch(addGPTMovieResult(lists));
     } catch (e) {
       setErr(e.message || "Request failed");

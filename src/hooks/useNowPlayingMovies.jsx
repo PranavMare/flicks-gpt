@@ -14,5 +14,5 @@ export const useNowPlayingMovies = () => {
       dispatch(addNowPlayingMovies(json?.results ?? []));
     };
     !nowPlayingMovies && getNowPlayingMovies();
-  }, [dispatch]);
+  }, [dispatch, nowPlayingMovies]);
 };

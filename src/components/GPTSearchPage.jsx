@@ -7,7 +7,9 @@ const GPTSearchPage = () => {
     <div className="">
       <img src="\background.jpeg" alt="backgrond image" className="absolute -z-10" />
       <GPTSearchBar />
-      <GPTMoviesSuggestion />
+      <div className="mt-10">
+        <GPTMoviesSuggestion />
+      </div>
     </div>
   );
 };
