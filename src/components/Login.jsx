@@ -121,7 +121,7 @@ const Login = () => {
               id="password"
               ref={password}
               type="password"
-              placeholder="••••••••"
+              placeholder="   ••••••••"
               autoComplete={isSignInForm ? "current-password" : "new-password"}
               className="
                 mt-1 w-full rounded-xl bg-white/10 placeholder-white/60 border border-white/10px-4 py-3
@@ -133,7 +133,7 @@ const Login = () => {
             type="submit"
             onClick={handleButtonClick}
             className=" mt-8 w-full rounded-xl bg-blue-600 hover:bg-blue-500 active:bg-blue-600 px-4 py-3 font-medium transition
-              focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 focus:ring-offset-black"
+              focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 focus:ring-offset-black cursor-pointer"
           >
             {isSignInForm ? "Sign In" : "Sign Up"}
           </button>
