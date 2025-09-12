@@ -1,7 +1,12 @@
 import React from "react";
+import Header from "./Header";
 
 const MovieInfo = () => {
-  return <div>MovieInfo</div>;
+  return (
+    <div>
+      <Header />
+    </div>
+  );
 };
 
 export default MovieInfo;

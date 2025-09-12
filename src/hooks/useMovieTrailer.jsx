@@ -12,13 +12,20 @@ const useMovieTrailer = (movieID) => {
 
     (async () => {
       try {
-        const res = await fetch(`/api/tmdb/movie/${movieID}/videos?language=en-US`, { signal: ctrl.signal });
+        const res = await fetch(
+          `/api/tmdb/movie/${movieID}/videos?language=en-US`,
+          { signal: ctrl.signal },
+        );
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const json = await res.json();
         const vids = Array.isArray(json?.results) ? json.results : [];
 
         // Prefer official trailer → any trailer → first video
-        const trailer = vids.find((v) => v.type === "Trailer" && v.official) || vids.find((v) => v.type === "Trailer") || vids[0] || null;
+        const trailer =
+          vids.find((v) => v.type === "Trailer" && v.official) ||
+          vids.find((v) => v.type === "Trailer") ||
+          vids[0] ||
+          null;
 
         dispatch(addTrailerVideo(trailer));
       } catch (err) {

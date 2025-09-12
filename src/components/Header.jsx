@@ -1,8 +1,6 @@
-import { getAuth, onAuthStateChanged, signOut } from "firebase/auth";
-import { useNavigate, useLocation } from "react-router-dom";
+import { getAuth, signOut } from "firebase/auth";
+import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { useEffect } from "react";
-import { addUser, removeUser } from "../utils/userSlice";
 import profileIcon from "../assets/profile-icon.png";
 import { toggleGptSearchView } from "./../utils/gptSlice";
 import { SUPPORTED_LANGUAGES } from "../utils/constants";
@@ -11,61 +9,63 @@ import { changeLanguage } from "../utils/configSlice";
 const Header = () => {
   const auth = getAuth();
   const navigate = useNavigate();
-  const location = useLocation();
   const dispatch = useDispatch();
-  const user = useSelector((store) => store.user);
 
+  const user = useSelector((store) => store.user);
   const showGPTSearch = useSelector((store) => store.gpt.showGPTSearch);
 
-  const handleSignOut = () => {
-    signOut(auth).catch(() => navigate("/error"));
+  const handleSignOut = async () => {
+    try {
+      await signOut(auth);
+      navigate("/", { replace: true });
+    } catch {
+      navigate("/error");
+    }
   };
-
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (fbUser) => {
-      if (fbUser) {
-        const { uid, email, displayName, photoURL } = fbUser;
-        dispatch(addUser({ uid, email, displayName, photoURL }));
-        navigate("/browse");
-      } else {
-        dispatch(removeUser());
-        navigate("/");
-      }
-    });
-    return () => unsubscribe();
-  }, [auth, dispatch, navigate, location.pathname]);
 
   const handleGPTSerachClick = () => {
-    //toggle GPT
     dispatch(toggleGptSearchView());
+    navigate("/browse");
   };
+
   const handleLanguageChange = (e) => {
     dispatch(changeLanguage(e.target.value));
   };
 
   return (
-    <header className="absolute top-0 inset-x-0 z-50 bg-gradient-to-b from-black">
+    <header className="absolute inset-x-0 top-0 z-50 bg-gradient-to-b from-black">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="flex h-14 sm:h-16 items-center justify-between">
-          <img src="/logo.svg" alt="FlicksGPT" className="h-8 sm:h-10 w-auto select-none" draggable="false" />
+        <div className="flex h-14 items-center justify-between sm:h-16">
+          <img
+            src="/logo.svg"
+            alt="FlicksGPT"
+            className="h-8 w-auto select-none sm:h-10"
+            draggable="false"
+          />
+
           {user && (
             <div className="flex items-center gap-3">
               {showGPTSearch && (
                 <select
                   onChange={handleLanguageChange}
-                  className="px-3 py-1.5 rounded-md border border-white/20 text-white font-semibold whitespace-nowrap active:bg-white/20 focus:outline-none focus:ring-2 focus:ring-white/40"
+                  className="rounded-md border border-white/20 px-3 py-1.5 font-semibold whitespace-nowrap text-white focus:ring-2 focus:ring-white/40 focus:outline-none active:bg-white/20"
                 >
                   {SUPPORTED_LANGUAGES.map((lang) => (
-                    <option key={lang.identifier} value={lang.identifier} className="text-black   active:bg-white/20">
+                    <option
+                      key={lang.identifier}
+                      value={lang.identifier}
+                      className="text-black active:bg-white/20"
+                    >
                       {lang.name}
                     </option>
                   ))}
                 </select>
               )}
+
               <img
                 src={user.photoURL || profileIcon}
                 alt="Profile"
-                className="h-9 w-9 sm:h-10 sm:w-10 rounded-full object-cover ring-2 ring-white/20 shadow"
+                className="h-9 w-9 rounded-full object-cover shadow ring-2 ring-white/20 sm:h-10 sm:w-10"
                 loading="lazy"
                 decoding="async"
                 onError={(e) => {
@@ -73,17 +73,22 @@ const Header = () => {
                   e.currentTarget.src = profileIcon;
                 }}
               />
+
               <button
+                key={showGPTSearch ? "home" : "gpt"}
                 type="button"
                 onClick={handleGPTSerachClick}
-                className="px-3 py-1.5 rounded-md border border-white/20 bg-blue-800 text-white/90 font-semibold whitespace-nowrap hover:bg-blue-900 active:bg-white/20 focus:outline-none focus:ring-2 focus:ring-white/40"
+                className={`rounded-md border border-white/20 bg-blue-800 px-3 py-1.5 font-semibold whitespace-nowrap text-white/90 hover:bg-blue-900 focus:ring-2 focus:ring-white/40 focus:outline-none active:bg-white/20 ${
+                  !showGPTSearch ? "motion-safe:animate-bounce" : ""
+                }`}
               >
                 {showGPTSearch ? "Home" : "GPT Search"}
               </button>
+
               <button
                 type="button"
                 onClick={handleSignOut}
-                className="px-3 py-1.5 rounded-md border border-white/20 bg-blue-800 text-white/90 font-semibold whitespace-nowrap hover:bg-blue-900 active:bg-white/20 focus:outline-none focus:ring-2 focus:ring-white/40"
+                className="rounded-md border border-white/20 bg-blue-800 px-3 py-1.5 font-semibold whitespace-nowrap text-white/90 hover:bg-blue-900 focus:ring-2 focus:ring-white/40 focus:outline-none active:bg-white/20"
               >
                 {"Sign\u2011Out"}
               </button>

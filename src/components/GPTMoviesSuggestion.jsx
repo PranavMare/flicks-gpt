@@ -20,7 +20,12 @@ const GPTMoviesSuggestion = () => {
           .filter((m) => m?.id && !seen.has(m.id))
           .map((m) => ({
             ...m,
-            title: m.title || m.name || m.original_title || m.original_name || "Untitled",
+            title:
+              m.title ||
+              m.name ||
+              m.original_title ||
+              m.original_name ||
+              "Untitled",
             poster_path: m.poster_path || m.backdrop_path || null,
           }))
           .filter((m) => {
@@ -30,22 +35,31 @@ const GPTMoviesSuggestion = () => {
 
         if (!movies.length) return null;
 
-        const title = raw?.bucketTitle || movies[0]?.collection?.name || movies[0]?.title || `Suggestions #${idx + 1}`;
+        const title =
+          raw?.bucketTitle ||
+          movies[0]?.collection?.name ||
+          movies[0]?.title ||
+          `Suggestions #${idx + 1}`;
 
         return { key: `${idx}-${movies[0].id}`, title, movies };
       })
       .filter(Boolean);
   }, [buckets]);
 
-  const total = useMemo(() => groups.reduce((sum, g) => sum + g.movies.length, 0), [groups]);
+  const total = useMemo(
+    () => groups.reduce((sum, g) => sum + g.movies.length, 0),
+    [groups],
+  );
 
   return (
-    <section className="mx-auto max-w-7xl px-4 py-6 bg-black">
+    <section className="mx-auto max-w-7xl bg-black/90 px-4 py-6">
       <header className="mb-5 flex items-end justify-between gap-3">
         <div>
           <h2 className="text-2xl font-semibold text-white">Search Results</h2>
           <p className="text-sm text-white/60" aria-live="polite">
-            {total ? `${total} result${total > 1 ? "s" : ""} in ${groups.length} group${groups.length > 1 ? "s" : ""}` : "Nothing yet"}
+            {total
+              ? `${total} result${total > 1 ? "s" : ""} in ${groups.length} group${groups.length > 1 ? "s" : ""}`
+              : "Nothing yet"}
           </p>
         </div>
       </header>
